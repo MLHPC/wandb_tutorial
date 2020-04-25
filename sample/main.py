@@ -13,7 +13,7 @@ BATCH_SIZE = 256
 LR = 0.01
 
 # wandb setup
-wandb.init(project='sample-pytorch-mnist', name='wandb-test-run')
+wandb.init(project='tutrial', name='tutrial_name')
 wandb.config.update({
     'epochs': EPOCHS,
     'batch_size': BATCH_SIZE,
