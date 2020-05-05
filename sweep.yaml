@@ -1,0 +1,11 @@
+program: ./sample/main.py
+method: bayes
+metric:
+  name: loss
+  goal: minimize
+parameters:
+  lr:
+    min: 0.001
+    max: 0.1
+  optimizer:
+    values: ["adam", "sgd"]
