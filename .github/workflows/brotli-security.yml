@@ -1,0 +1,44 @@
+name: Pillow Brotli security repair
+
+on:
+  pull_request:
+    paths:
+      - scripts/repair_pillow_brotli.py
+      - tests/test_repair_pillow_brotli.py
+      - .github/workflows/brotli-security.yml
+  push:
+    branches: [master]
+    paths:
+      - scripts/repair_pillow_brotli.py
+      - tests/test_repair_pillow_brotli.py
+      - .github/workflows/brotli-security.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-repair:
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-14]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: astral-sh/setup-uv@37802adc94f370d6bfd71619e3f0bf239e1f3b78 # v7
+        with:
+          version: '0.13.5'
+      - name: Check repair boundaries
+        run: uv run --no-project --python 3.13 python -m unittest discover -s tests -p test_repair_pillow_brotli.py -v
+      - name: Repair an isolated known-old Pillow wheel
+        run: >-
+          uv run --no-project --python 3.13 --with pillow==12.3.0 python
+          scripts/repair_pillow_brotli.py --apply
+          --backup-dir "${{ runner.temp }}/pillow-brotli-backup"
+      - name: Verify repair and idempotence
+        run: |
+          uv run --no-project --python 3.13 --with pillow==12.3.0 python scripts/repair_pillow_brotli.py --check
+          uv run --no-project --python 3.13 --with pillow==12.3.0 python scripts/repair_pillow_brotli.py --apply --backup-dir "${{ runner.temp }}/must-not-be-created"
+          test ! -e "${{ runner.temp }}/must-not-be-created"
