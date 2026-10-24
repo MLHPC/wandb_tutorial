@@ -1,5 +1,8 @@
 # Weights & Biases の使い方
 
+Security: after environment setup/sync, check Pillow’s bundled Brotli decoder; see [CVE-2026-111497 remediation](docs/BROTLI_SECURITY.md).
+
+
 <!-- TOC -->
 
 - [Weights & Biases の使い方](#weights--biases-%E3%81%AE%E4%BD%BF%E3%81%84%E6%96%B9)
